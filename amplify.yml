@@ -26,3 +26,20 @@ applications:
         build:
           commands:
             - docker build -t jobsplus-backend .
+  - appRoot: .
+    customHeaders:
+      - pattern: '**/*'
+        headers:
+          - key: Cache-Control
+            value: max-age=0
+    redirects:
+      # API requests go to backend
+      - source: /api/<*>
+        target: /api/<*>
+        status: 200
+        condition: null
+      # All other routes go to React frontend
+      - source: </*>
+        target: /index.html
+        status: 200
+        condition: null
