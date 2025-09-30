@@ -7,13 +7,14 @@ function App() {
   const [leadTitle, setLeadTitle] = useState("");
   const [leadDescription, setLeadDescription] = useState("");
   const [status, setStatus] = useState("NEW");
+  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       // First, create or upsert the customer
-      const customerRes = await fetch("/api/customers", {
+      const customerRes = await fetch(`${API_BASE}/api/customers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, phone }),
@@ -23,7 +24,7 @@ function App() {
       const customer = await customerRes.json();
 
       // Then, create the lead linked to that customer
-      const leadRes = await fetch("/api/leads", {
+      const leadRes = await fetch(`${API_BASE}/api/leads`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
