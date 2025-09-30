@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    Int    @id @default(autoincrement())
+  name  String
+  email String @unique
+}
+
+model Customer {
+  id      Int     @id @default(autoincrement())
+  name    String
+  email   String?  @unique
+  phone   String?
+
+  leads   Lead[]
+  jobs    Job[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lead {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  status    LeadStatus @default(NEW)
+
+  customerId  Int
+  customer    Customer @relation(fields: [customerId], references: [id])
+
+  jobs        Job[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Job {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  status    JobStatus @default(NEW)
+
+  customerId  Int
+  customer    Customer @relation(fields: [customerId], references: [id])
+
+  lead        Lead?    @relation(fields: [leadId], references: [id])
+  leadId      Int?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  LOST
+  WON
+}
+
+enum JobStatus {
+  NEW
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
