@@ -15,6 +15,8 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
+// Notes
+
 // Route
 server.get("/api/users", async (_request, reply) => {
   const result = await pool.query("SELECT * FROM users");
