@@ -15,7 +15,7 @@ function App() {
     e.preventDefault();
 
     try {
-      // 🔑 Get current Cognito token
+      // 🔑 Get current Cognito token test
       const session = await fetchAuthSession();
       const token = session.tokens?.idToken?.toString();
 
