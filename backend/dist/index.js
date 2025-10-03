@@ -4,6 +4,7 @@ import { Pool } from "pg";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import fastifyCors from "@fastify/cors";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 dotenv.config();
 const server = Fastify({ logger: true });
 const prisma = new PrismaClient();
@@ -18,6 +19,8 @@ server.addHook("onRequest", async (req, reply) => {
         headers: req.headers,
     });
 });
+// Global hook: applies to ALL routes
+server.addHook("preHandler", verifyToken);
 await server.register(cors, {
     origin: (origin, cb) => {
         console.log("CORS check for origin:", origin);
@@ -25,6 +28,36 @@ await server.register(cors, {
     },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 });
+// Cognito values
+const region = "us-east-2";
+const userPoolId = "us-east-2_5diebWcgj";
+const jwksUrl = `https://cognito-idp.${region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`;
+// Create JWKS client
+const JWKS = createRemoteJWKSet(new URL(jwksUrl));
+// Middleware to check auth
+async function verifyToken(req, reply) {
+    try {
+        const auth = req.headers.authorization;
+        if (!auth) {
+            return reply.code(401).send({ error: "Missing Authorization header" });
+        }
+        const token = auth.replace("Bearer ", "");
+        const { payload } = await jwtVerify(token, JWKS, {
+            issuer: `https://cognito-idp.${region}.amazonaws.com/${userPoolId}`,
+        });
+        // Attach decoded user info to request
+        req.user = payload;
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            req.log.error({ err }, "Auth failed");
+        }
+        else {
+            req.log.error({ err }, "Auth failed");
+        }
+        return reply.code(401).send({ error: "Invalid or expired token" });
+    }
+}
 // Route
 server.get("/api/users", async (_request, reply) => {
     const result = await pool.query("SELECT * FROM users");
