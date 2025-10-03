@@ -3,12 +3,27 @@ import cors from "@fastify/cors";
 import { Pool } from "pg";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import fastifyCors from "@fastify/cors";
 dotenv.config();
 const server = Fastify({ logger: true });
 const prisma = new PrismaClient();
-server.register(cors, { origin: true });
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
+});
+server.addHook("onRequest", async (req, reply) => {
+    console.log("Incoming request:", {
+        method: req.method,
+        url: req.url,
+        origin: req.headers.origin,
+        headers: req.headers,
+    });
+});
+await server.register(cors, {
+    origin: (origin, cb) => {
+        console.log("CORS check for origin:", origin);
+        cb(null, "https://main.d2np3paqtw76f.amplifyapp.com");
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 });
 // Route
 server.get("/api/users", async (_request, reply) => {

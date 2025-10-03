@@ -3,19 +3,71 @@ import cors from "@fastify/cors";
 import { Pool } from "pg";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import fastifyCors from "@fastify/cors";
+import { createRemoteJWKSet, jwtVerify } from "jose";
+import type { FastifyRequest, FastifyReply } from "fastify";
 
 dotenv.config();
 
 const server = Fastify({ logger: true });
 const prisma = new PrismaClient();
 
-server.register(cors, { origin: true });
-
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-// Notes
+server.addHook("onRequest", async (req, reply) => {
+  console.log("Incoming request:", {
+    method: req.method,
+    url: req.url,
+    origin: req.headers.origin,
+    headers: req.headers,
+  });
+});
+
+// Global hook: applies to ALL routes
+server.addHook("preHandler", verifyToken);
+
+await server.register(cors, {
+  origin: (origin, cb) => {
+    console.log("CORS check for origin:", origin);
+    cb(null, "https://main.d2np3paqtw76f.amplifyapp.com");
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+});
+
+// Cognito values
+const region = "us-east-2";
+const userPoolId = "us-east-2_5diebWcgj";
+const jwksUrl = `https://cognito-idp.${region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`;
+
+// Create JWKS client
+const JWKS = createRemoteJWKSet(new URL(jwksUrl));
+
+// Middleware to check auth
+async function verifyToken(req: FastifyRequest, reply: FastifyReply) {
+  try {
+    const auth = req.headers.authorization;
+    if (!auth) {
+      return reply.code(401).send({ error: "Missing Authorization header" });
+    }
+
+    const token = auth.replace("Bearer ", "");
+    const { payload } = await jwtVerify(token, JWKS, {
+      issuer: `https://cognito-idp.${region}.amazonaws.com/${userPoolId}`,
+    });
+
+    // Attach decoded user info to request
+    (req as any).user = payload;
+  } catch (err) {
+    if (err instanceof Error) {
+      req.log.error({ err }, "Auth failed");
+    } else {
+      req.log.error({ err }, "Auth failed");
+    }
+    return reply.code(401).send({ error: "Invalid or expired token" });
+  }
+}
 
 // Route
 server.get("/api/users", async (_request, reply) => {

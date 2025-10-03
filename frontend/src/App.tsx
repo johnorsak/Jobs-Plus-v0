@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import AuthButtons from "./AuthButtons";
+import { fetchAuthSession } from "aws-amplify/auth";
 
 function App() {
   const [name, setName] = useState("");
@@ -13,10 +15,22 @@ function App() {
     e.preventDefault();
 
     try {
+      // 🔑 Get current Cognito token
+      const session = await fetchAuthSession();
+      const token = session.tokens?.idToken?.toString();
+
+      if (!token) {
+        alert("You must be signed in first!");
+        return;
+      }
+
       // First, create or upsert the customer
       const customerRes = await fetch(`${API_BASE}/api/customers`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // 👈 attach token
+        },
         body: JSON.stringify({ name, email, phone }),
       });
 
@@ -26,7 +40,10 @@ function App() {
       // Then, create the lead linked to that customer
       const leadRes = await fetch(`${API_BASE}/api/leads`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // 👈 attach token
+        },
         body: JSON.stringify({
           title: leadTitle,
           description: leadDescription,
@@ -54,6 +71,10 @@ function App() {
   return (
     <div style={{ maxWidth: 500, margin: "2rem auto" }}>
       <h1>Create Customer + Lead</h1>
+
+      {/* 🔑 Add login/logout buttons */}
+      <AuthButtons />
+
       <form onSubmit={handleSubmit}>
         <h2>Customer Info</h2>
         <div>
