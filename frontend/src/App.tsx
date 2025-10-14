@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AuthButtons from "./AuthButtons";
 import { fetchAuthSession } from "aws-amplify/auth";
+import { Authenticator } from "@aws-amplify/ui-react";
 
 function App() {
   const [name, setName] = useState("");
@@ -69,52 +70,54 @@ function App() {
   };
 
   return (
-    <div style={{ maxWidth: 500, margin: "2rem auto" }}>
-      <h1>Create Customer + Lead</h1>
+    <Authenticator>
+      <div style={{ maxWidth: 500, margin: "2rem auto" }}>
+        <h1>Create Customer + Lead</h1>
 
-      {/* 🔑 Add login/logout buttons */}
-      <AuthButtons />
+        {/* 🔑 Add login/logout buttons */}
+        <AuthButtons />
 
-      <form onSubmit={handleSubmit}>
-        <h2>Customer Info</h2>
-        <div>
-          <label>Name: </label>
-          <input value={name} onChange={e => setName(e.target.value)} required />
-        </div>
-        <div>
-          <label>Email: </label>
-          <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
-        </div>
-        <div>
-          <label>Phone: </label>
-          <input value={phone} onChange={e => setPhone(e.target.value)} />
-        </div>
+        <form onSubmit={handleSubmit}>
+          <h2>Customer Info</h2>
+          <div>
+            <label>Name: </label>
+            <input value={name} onChange={e => setName(e.target.value)} required />
+          </div>
+          <div>
+            <label>Email: </label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+          </div>
+          <div>
+            <label>Phone: </label>
+            <input value={phone} onChange={e => setPhone(e.target.value)} />
+          </div>
 
-        <h2>Lead Info</h2>
-        <div>
-          <label>Title: </label>
-          <input value={leadTitle} onChange={e => setLeadTitle(e.target.value)} required />
-        </div>
-        <div>
-          <label>Description: </label>
-          <input value={leadDescription} onChange={e => setLeadDescription(e.target.value)} />
-        </div>
-        <div>
-          <label>Status: </label>
-          <select value={status} onChange={e => setStatus(e.target.value)}>
-            <option value="NEW">NEW</option>
-            <option value="CONTACTED">CONTACTED</option>
-            <option value="QUALIFIED">QUALIFIED</option>
-            <option value="LOST">LOST</option>
-            <option value="WON">WON</option>
-          </select>
-        </div>
+          <h2>Lead Info</h2>
+          <div>
+            <label>Title: </label>
+            <input value={leadTitle} onChange={e => setLeadTitle(e.target.value)} required />
+          </div>
+          <div>
+            <label>Description: </label>
+            <input value={leadDescription} onChange={e => setLeadDescription(e.target.value)} />
+          </div>
+          <div>
+            <label>Status: </label>
+            <select value={status} onChange={e => setStatus(e.target.value)}>
+              <option value="NEW">NEW</option>
+              <option value="CONTACTED">CONTACTED</option>
+              <option value="QUALIFIED">QUALIFIED</option>
+              <option value="LOST">LOST</option>
+              <option value="WON">WON</option>
+            </select>
+          </div>
 
-        <button type="submit" style={{ marginTop: "1rem" }}>
-          Save
-        </button>
-      </form>
-    </div>
+          <button type="submit" style={{ marginTop: "1rem" }}>
+            Save
+          </button>
+        </form>
+      </div>
+    </Authenticator>
   );
 }
 
