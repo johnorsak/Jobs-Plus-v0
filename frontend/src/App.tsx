@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import AuthButtons from "./AuthButtons";
 import { fetchAuthSession } from "aws-amplify/auth";
 import { Authenticator } from "@aws-amplify/ui-react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   const [name, setName] = useState("");
@@ -28,7 +29,7 @@ function App() {
       // First, create or upsert the customer
       const customerRes = await fetch(`${API_BASE}/api/customers`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`, // 👈 attach token
         },
@@ -41,7 +42,7 @@ function App() {
       // Then, create the lead linked to that customer
       const leadRes = await fetch(`${API_BASE}/api/leads`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`, // 👈 attach token
         },
@@ -77,45 +78,80 @@ function App() {
         {/* 🔑 Add login/logout buttons */}
         <AuthButtons />
 
-        <form onSubmit={handleSubmit}>
-          <h2>Customer Info</h2>
-          <div>
-            <label>Name: </label>
-            <input value={name} onChange={e => setName(e.target.value)} required />
-          </div>
-          <div>
-            <label>Email: </label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
-          </div>
-          <div>
-            <label>Phone: </label>
-            <input value={phone} onChange={e => setPhone(e.target.value)} />
-          </div>
+        <div className="container mt-5">
+          <div className="card shadow p-4">
+            <form onSubmit={handleSubmit}>
+              <h2>Customer Info</h2>
+              <div>
+                <label className="form-label">Name: </label>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="form-label">Email: </label>
+                <input
+                  className="form-control"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="form-label">Phone: </label>
+                <input
+                  className="form-control"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
 
-          <h2>Lead Info</h2>
-          <div>
-            <label>Title: </label>
-            <input value={leadTitle} onChange={e => setLeadTitle(e.target.value)} required />
-          </div>
-          <div>
-            <label>Description: </label>
-            <input value={leadDescription} onChange={e => setLeadDescription(e.target.value)} />
-          </div>
-          <div>
-            <label>Status: </label>
-            <select value={status} onChange={e => setStatus(e.target.value)}>
-              <option value="NEW">NEW</option>
-              <option value="CONTACTED">CONTACTED</option>
-              <option value="QUALIFIED">QUALIFIED</option>
-              <option value="LOST">LOST</option>
-              <option value="WON">WON</option>
-            </select>
-          </div>
+              <h2>Lead Info</h2>
+              <div>
+                <label className="form-label">Title: </label>
+                <input
+                  className="form-control"
+                  value={leadTitle}
+                  onChange={(e) => setLeadTitle(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="form-label">Description: </label>
+                <input
+                  className="form-control"
+                  value={leadDescription}
+                  onChange={(e) => setLeadDescription(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="form-label">Status: </label>
+                <select
+                  className="form-select"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <option value="NEW">NEW</option>
+                  <option value="CONTACTED">CONTACTED</option>
+                  <option value="QUALIFIED">QUALIFIED</option>
+                  <option value="LOST">LOST</option>
+                  <option value="WON">WON</option>
+                </select>
+              </div>
 
-          <button type="submit" style={{ marginTop: "1rem" }}>
-            Save
-          </button>
-        </form>
+              <button
+                className="btn btn-success"
+                type="submit"
+                style={{ marginTop: "1rem" }}
+              >
+                Save
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </Authenticator>
   );

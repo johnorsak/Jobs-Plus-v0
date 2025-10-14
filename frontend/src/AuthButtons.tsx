@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { signInWithRedirect, signOut, fetchAuthSession } from "aws-amplify/auth";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AuthButtons: React.FC = () => {
   const [user, setUser] = useState<any>(null);
@@ -25,7 +26,7 @@ const AuthButtons: React.FC = () => {
       {user ? (
         <>
           <p>Welcome, {user.email}</p>
-          <button onClick={() => signOut()}>Sign Out</button>
+          <button className="btn btn-secondary" onClick={() => signOut()}>Sign Out</button>
         </>
       ) : (
         <button onClick={() => signInWithRedirect()}>Sign In</button>
