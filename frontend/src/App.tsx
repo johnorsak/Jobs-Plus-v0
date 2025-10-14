@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AuthButtons from "./AuthButtons";
-import { fetchAuthSession } from "aws-amplify/auth";
+import AuthPage from './AuthPage';
+import { fetchAuthSession, getCurrentUser, signOut} from "aws-amplify/auth";
 import { Authenticator } from "@aws-amplify/ui-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -11,7 +12,16 @@ function App() {
   const [leadTitle, setLeadTitle] = useState("");
   const [leadDescription, setLeadDescription] = useState("");
   const [status, setStatus] = useState("NEW");
+  const [user, setUser] = useState<any>(null);
   const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
+
+  useEffect(() => {
+    getCurrentUser().then(setUser).catch(() => setUser(null));
+  }, []);
+
+  if (!user) {
+    return <AuthPage onAuthSuccess={() => window.location.reload()} />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +95,7 @@ function App() {
               <div>
                 <label className="form-label">Name: </label>
                 <input
+                className="form-control"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
