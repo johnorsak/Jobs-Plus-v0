@@ -8,7 +8,9 @@ applications:
             - npm ci
         build:
           commands:
+            - npm ci
             - npm run build
+            - cp -r public/dhtmlx-grid/gridpack.js public/dhtmlx-grid/gridpack.css ./build/
       artifacts:
         baseDirectory: build
         files:
