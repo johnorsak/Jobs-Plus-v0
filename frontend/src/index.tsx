@@ -21,15 +21,7 @@ Amplify.configure({
     Cognito: {
       userPoolId: "us-east-2_5diebWcgj",
       userPoolClientId: "dt1nel3krcmkpmm6vr8504ur",
-      loginWith: {
-        oauth: {
-          domain: "https://us-east-25diebwcgj.auth.us-east-2.amazoncognito.com",
-          scopes: ["email", "openid", "profile"],
-          redirectSignIn: ["https://main.d2np3paqtw76f.amplifyapp.com"],
-          redirectSignOut: ["https://main.d2np3paqtw76f.amplifyapp.com"],
-          responseType: "code",
-        },
-      },
+      loginWith: { email: true },
     },
   },
 });
