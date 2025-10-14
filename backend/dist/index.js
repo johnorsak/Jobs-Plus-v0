@@ -63,6 +63,33 @@ server.get("/api/users", async (_request, reply) => {
     const result = await pool.query("SELECT * FROM users");
     return reply.send(result.rows);
 });
+// Get all customers
+server.get("/api/customers", async (_request, reply) => {
+    try {
+        const customers = await prisma.customer.findMany({
+            orderBy: { id: "desc" },
+        });
+        return reply.send(customers);
+    }
+    catch (err) {
+        server.log.error(err);
+        return reply.code(500).send({ error: "Failed to fetch customers" });
+    }
+});
+// Get all leads (include customer)
+server.get("/api/leads", async (_request, reply) => {
+    try {
+        const leads = await prisma.lead.findMany({
+            include: { customer: true },
+            orderBy: { id: "desc" },
+        });
+        return reply.send(leads);
+    }
+    catch (err) {
+        server.log.error(err);
+        return reply.code(500).send({ error: "Failed to fetch leads" });
+    }
+});
 // Upsert Customer
 server.post("/api/customers", async (request, reply) => {
     try {
