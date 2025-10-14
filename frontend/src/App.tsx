@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import AuthButtons from "./AuthButtons";
+import Navbar from "./Navbar";
 import AuthPage from './AuthPage';
 import { fetchAuthSession, getCurrentUser, signOut} from "aws-amplify/auth";
 import { Authenticator } from "@aws-amplify/ui-react";
@@ -82,13 +82,12 @@ function App() {
 
   return (
     <Authenticator>
+      <Navbar />
+
       <div style={{ maxWidth: 500, margin: "2rem auto" }}>
-        <h1>Create Customer + Lead</h1>
-
-        {/* 🔑 Add login/logout buttons */}
-        <AuthButtons />
-
+        
         <div className="container mt-5">
+          <h1>Create Customer + Lead</h1>
           <div className="card shadow p-4">
             <form onSubmit={handleSubmit}>
               <h2>Customer Info</h2>
