@@ -24,9 +24,20 @@ server.addHook("preHandler", verifyToken);
 await server.register(cors, {
     origin: (origin, cb) => {
         console.log("CORS check for origin:", origin);
-        cb(null, "https://main.d2np3paqtw76f.amplifyapp.com");
+        // Allow requests from both Amplify app and local dev
+        const allowedOrigins = [
+            "https://main.d2np3paqtw76f.amplifyapp.com",
+            "http://localhost:3000"
+        ];
+        if (!origin || allowedOrigins.includes(origin)) {
+            cb(null, true); // ✅ allow
+        }
+        else {
+            cb(new Error("Not allowed by CORS"), false);
+        }
     },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true, // if you ever use cookies
 });
 // Cognito values
 const region = "us-east-2";
@@ -36,6 +47,10 @@ const jwksUrl = `https://cognito-idp.${region}.amazonaws.com/${userPoolId}/.well
 const JWKS = createRemoteJWKSet(new URL(jwksUrl));
 // Middleware to check auth
 async function verifyToken(req, reply) {
+    // Skip auth for public GET routes
+    if (req.method === "GET" && (req.url.startsWith("/api/customers") || req.url.startsWith("/api/leads"))) {
+        return;
+    }
     try {
         const auth = req.headers.authorization;
         if (!auth) {

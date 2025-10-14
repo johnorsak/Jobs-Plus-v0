@@ -15,6 +15,7 @@ import {
   Route,
   Link,
   useLocation,
+  Navigate,
 } from "react-router-dom";
 
 const AppContent = () => {
@@ -27,12 +28,24 @@ const AppContent = () => {
 
   if (!user) return <AuthPage onAuthSuccess={() => window.location.reload()} />;
 
+  const LeadsViewWrapper = () => {
+    const location = useLocation();
+    const openModal = location.state?.openModal || false;
+    return <LeadsView openModalOnLoad={openModal} />;
+  };
+
   return (
     <Authenticator>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/newLead" element={<NewLead />} />
-        <Route path="/leads" element={<LeadsView />} />
+
+        {/* Redirect /newLead → /leads with state to open modal */}
+        <Route
+          path="/newLead"
+          element={<Navigate to="/leads" state={{ openModal: true }} replace />}
+        />
+
+        <Route path="/leads" element={<LeadsViewWrapper />} />
         <Route path="/customers" element={<CustomersView />} />
       </Routes>
     </Authenticator>

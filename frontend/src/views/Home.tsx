@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const Home: React.FC = () => {
   return (
     <div className="container mt-5 text-center">
-      <h1>Welcome to JobsPlus</h1>
+      <h1>Welcome to Jobs Plus</h1>
       <p className="lead mt-3">
         Manage your leads and customers easily.
       </p>
