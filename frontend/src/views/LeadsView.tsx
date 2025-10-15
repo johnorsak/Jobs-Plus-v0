@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { fetchAuthSession } from "aws-amplify/auth";
-import NewLead from "./NewLead"; // ✅ import your form component
+import NewLead, { NewLeadRef } from "./NewLead";
+import { Grid } from "dhx-suite";
+import "dhx-suite/codebase/suite.min.css";
+import "../styles.css";
 
 const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
-
-declare const dhx: any;
 
 interface LeadsViewProps {
   openModalOnLoad?: boolean;
@@ -16,6 +17,7 @@ const LeadsView: React.FC<LeadsViewProps> = ({ openModalOnLoad = false }) => {
   const gridInstance = useRef<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const formRef = useRef<{ handleSubmit: () => void }>(null);
 
   const loadLeads = async () => {
     try {
@@ -39,15 +41,14 @@ const LeadsView: React.FC<LeadsViewProps> = ({ openModalOnLoad = false }) => {
       if (gridInstance.current) {
         gridInstance.current.data.parse(gridData);
       } else if (gridContainer.current) {
-        gridInstance.current = new dhx.Grid(gridContainer.current, {
+        gridInstance.current = new Grid(gridContainer.current, {
           columns: [
             { id: "id", header: [{ text: "ID" }], width: 80 },
-            { id: "title", header: [{ text: "Title" }], fillspace: true },
+            { id: "title", header: [{ text: "Title" }] },
             { id: "status", header: [{ text: "Status" }], width: 120 },
             {
               id: "customerName",
               header: [{ text: "Customer" }],
-              fillspace: true,
             },
           ],
           autoWidth: true,
@@ -55,6 +56,7 @@ const LeadsView: React.FC<LeadsViewProps> = ({ openModalOnLoad = false }) => {
           sortable: true,
           selection: "row",
           height: "auto",
+          editable: true,
         });
         gridInstance.current.data.parse(gridData);
       }
@@ -87,7 +89,7 @@ const LeadsView: React.FC<LeadsViewProps> = ({ openModalOnLoad = false }) => {
         ref={gridContainer}
         style={{
           width: "100%",
-          maxHeight: "calc(100vh - 160px)",
+          height: "calc(80vh)",
           border: "1px solid #ccc",
           overflow: "auto",
         }}
@@ -102,7 +104,7 @@ const LeadsView: React.FC<LeadsViewProps> = ({ openModalOnLoad = false }) => {
           onClick={() => setShowModal(false)}
         >
           <div
-            className="modal-dialog modal-lg modal-dialog-centered"
+            className="modal-dialog modal-xl modal-dialog-centered"
             role="document"
             onClick={(e) => e.stopPropagation()}
           >
@@ -116,13 +118,24 @@ const LeadsView: React.FC<LeadsViewProps> = ({ openModalOnLoad = false }) => {
                 ></button>
               </div>
               <div className="modal-body">
-                {/* ✅ Pass callback to close and refresh */}
                 <NewLead
-                  onSaved={() => {
-                    setShowModal(false);
-                    loadLeads(); // refresh grid
+                  ref={formRef}
+                  onSuccess={() => {
+                    setShowModal(false); // ✅ close modal
+                    loadLeads(); // ✅ refresh grid
                   }}
                 />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-success"
+                  onClick={() => formRef.current?.handleSubmit()}
+                >
+                  Save
+                </button>
               </div>
             </div>
           </div>

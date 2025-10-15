@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { fetchAuthSession } from "aws-amplify/auth";
+import { Grid } from "dhx-suite";
+import "dhx-suite/codebase/suite.min.css";
 
 const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
-
-declare const dhx: any; // 👈 add this to let TypeScript recognize global dhx
 
 const CustomersView: React.FC = () => {
   const gridContainer = useRef<HTMLDivElement>(null);
@@ -27,12 +27,12 @@ const CustomersView: React.FC = () => {
 
         // ✅ Initialize grid
         if (gridContainer.current) {
-          gridInstance.current = new dhx.Grid(gridContainer.current, {
+          gridInstance.current = new Grid(gridContainer.current, {
             columns: [
               { id: "id", header: [{ text: "ID" }], width: 80 },
-              { id: "name", header: [{ text: "Name" }], fillspace: true },
-              { id: "email", header: [{ text: "Email" }], fillspace: true },
-              { id: "phone", header: [{ text: "Phone" }], fillspace: true },
+              { id: "name", header: [{ text: "Name" }]},
+              { id: "email", header: [{ text: "Email" }]},
+              { id: "phone", header: [{ text: "Phone" }]},
             ],
             height: "auto",
             autoWidth: true,
@@ -75,6 +75,7 @@ const CustomersView: React.FC = () => {
         ref={gridContainer}
         style={{
           width: "100%",
+          height: "calc(80vh)",
           border: "1px solid #ccc",
           overflow: "auto",
         }}

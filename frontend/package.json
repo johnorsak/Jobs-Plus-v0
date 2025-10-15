@@ -47,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "dhtmlx-grid": "file:libs/dhtmlx-grid",
     "react-scripts": "^5.0.1"
   }
 }

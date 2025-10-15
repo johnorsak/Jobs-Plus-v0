@@ -1,0 +1,39 @@
+.modal-xl-form-container {
+  max-height: calc(75vh);
+}
+
+.form-label {
+    font-size:smaller;
+    font-weight: 500;
+    margin: 0;
+}
+
+.btn-toggle {
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn-toggle .arrow {
+  display: inline-block;
+  width: 1.25em;
+  height: 1.25em;
+  content: "";
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: transform 0.35s ease;
+  transform-origin: center;
+}
+
+.btn-toggle[aria-expanded="true"] .arrow {
+  transform: rotate(90deg);
+}
+
+.form-section {
+  position: relative;
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;   /* creates space for the shadow */
+  overflow: hidden;        /* keeps inner content tidy */
+}
